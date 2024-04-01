@@ -28,7 +28,7 @@ with st.sidebar:
 if file is not None:
     pdf_reader=PdfReader(file)  #pdf_reader containes the read file 
     text=""
-    for page in pdf_reader.pages:                   #page coordinates return krrha 
+    for page in pdf_reader.pages:                   #returning page coordinates 
         
         text=text+page.extract_text()               #to extract the texts from page we use extract_text()
     #st.write(text)
