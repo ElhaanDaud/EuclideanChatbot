@@ -5,7 +5,9 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain_community.chat_models import ChatOpenAI
+from dotenv import load_dotenv
 import time
+import os
 
 progress_bar = st.progress(0)
 for i in range(100):
@@ -13,7 +15,7 @@ for i in range(100):
     time.sleep(0.1)
 
 
-OPENAI_API_KEY=""   
+OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
 
 #Header of the webpage
 st.header("Euclidean Chatbot Project")
