@@ -16,49 +16,47 @@ for i in range(100):
     time.sleep(0.1)
 
 
-OPENAI_API_KEY=secret["OPENAI_API_KEY"]
+OPENAI_API_KEY = secret["OPENAI_API_KEY"]
 
-#Header of the webpage
+# Header of the webpage
 st.header("Euclidean Chatbot Project")
 
 
-#Uploading Documents
+# Uploading Documents
 with st.sidebar:
     st.title("Your Documents")
-    file=st.file_uploader("Upload your file and start asking questions",type="Pdf")
+    file = st.file_uploader("Upload your file and start asking questions", type="Pdf")
 
-#Extracting the text
+# Extracting the text
 if file is not None:
-    pdf_reader=PdfReader(file)  #pdf_reader containes the read file 
-    text=""
-    for page in pdf_reader.pages:                   #returning page coordinates 
-        
-        text=text+page.extract_text()               #to extract the texts from page we use extract_text()
-    #st.write(text)
+    pdf_reader = PdfReader(file)  # pdf_reader containes the read file
+    text = ""
+    for page in pdf_reader.pages:  # returning page coordinates
 
+        text = (
+            text + page.extract_text()
+        )  # to extract the texts from page we use extract_text()
+    # st.write(text)
 
-#Breaking it into chunks
+    # Breaking it into chunks
     text_splitter = RecursiveCharacterTextSplitter(
-            separators="\n",
-            chunk_size=1000,  #length of each chunk is 1000 characters
-            chunk_overlap=150, #+- 150 characters of abover and below will be considered
-            length_function=len 
+        separators="\n",
+        chunk_size=1000,  # length of each chunk is 1000 characters
+        chunk_overlap=150,  # +- 150 characters of abover and below will be considered
+        length_function=len,
     )
-    chunks=text_splitter.split_text(text)
-    #st.write(chunks)
+    chunks = text_splitter.split_text(text)
+    # st.write(chunks)
 
-
-#Generating Embeddings
+    # Generating Embeddings
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 
+    # creating vector storage - FAISS (facebook AI semantic search)
+    vector_store = FAISS.from_texts(
+        chunks, embeddings
+    )  # Chiz(chunks) - Its value(embeddings)
 
-
-#creating vector storage - FAISS (facebook AI semantic search)
-    vector_store=FAISS.from_texts(chunks,embeddings)                        #Chiz(chunks) - Its value(embeddings) 
-
-
-
-    #get user question
+    # get user question
     user_question = st.text_input("Type your question here")
 
     # Create two columns
@@ -66,17 +64,16 @@ if file is not None:
 
     # Add a button to the first column
     with col1:
-        button1 = st.button('Summary Of Document')
+        button1 = st.button("Summary Of Document")
 
     # Add a button to the second column
     with col2:
-        button2 = st.button('Important Pointers')
+        button2 = st.button("Important Pointers")
 
-    #button clicked
+    # button clicked
     option = None  # Initialize option outside the button click check
     search_triggered = False  # Initialize search_triggered
 
-    
     if button1:
         option = "Summary Of Document"
         search_triggered = True
@@ -85,8 +82,8 @@ if file is not None:
         search_triggered = True
 
     # Check if the search should be triggered
-    if st.session_state.get('last_option') != option:
-        st.session_state['last_option'] = option
+    if st.session_state.get("last_option") != option:
+        st.session_state["last_option"] = option
         search_triggered = True
 
     # Do similarity search and generate response
@@ -96,7 +93,7 @@ if file is not None:
             openai_api_key=OPENAI_API_KEY,
             temperature=0,  # lower the value more accurate (randomness less)
             max_tokens=1000,  # finetuning stuffs
-            model_name="gpt-3.5-turbo"
+            model_name="gpt-3.5-turbo",
         )
 
         # output results
